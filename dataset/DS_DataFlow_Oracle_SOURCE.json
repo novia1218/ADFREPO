@@ -1,0 +1,23 @@
+{
+	"name": "DS_DataFlow_Oracle_SOURCE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Oracle",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SRC_Table_Name": {
+				"type": "string",
+				"defaultValue": "DATA_LOAD_TEST1"
+			}
+		},
+		"annotations": [],
+		"type": "OracleTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "HR",
+			"table": "EMPLOYEES"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,17 @@
+{
+	"name": "DS_Oracle_Tgt_Hr",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ORACLE_TGT_HR",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "OracleTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "TGTHR",
+			"table": "TGT_EMPLOYEES"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

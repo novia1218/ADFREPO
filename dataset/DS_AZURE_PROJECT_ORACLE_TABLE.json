@@ -1,0 +1,29 @@
+{
+	"name": "DS_AZURE_PROJECT_ORACLE_TABLE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Oracle",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"TABLENAME": {
+				"type": "string",
+				"defaultValue": "JOBS"
+			}
+		},
+		"folder": {
+			"name": "AZURE_PROJECT_DATASET"
+		},
+		"annotations": [],
+		"type": "OracleTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "HR",
+			"table": {
+				"value": "@dataset().TABLENAME",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,20 @@
+{
+	"name": "L_LocationDimSink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AZURE_PROJECT_DATASET"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "hr",
+			"table": "Location_Dim"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

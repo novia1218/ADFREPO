@@ -1,0 +1,19 @@
+{
+	"name": "DS_Insurance_SRC",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Oracle",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SOURCETABLENAME": {
+				"type": "string",
+				"defaultValue": "INSURANCE_DATAFLOW"
+			}
+		},
+		"annotations": [],
+		"type": "OracleTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

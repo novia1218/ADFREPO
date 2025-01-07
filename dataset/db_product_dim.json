@@ -1,0 +1,20 @@
+{
+	"name": "db_product_dim",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AZURE_PROJECT_DATASET"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "hr",
+			"table": "product_dim"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

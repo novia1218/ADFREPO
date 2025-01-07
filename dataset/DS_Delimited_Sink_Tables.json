@@ -1,0 +1,23 @@
+{
+	"name": "DS_Delimited_Sink_Tables",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileSystem": "gen2target"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

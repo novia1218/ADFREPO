@@ -1,0 +1,57 @@
+{
+	"name": "C_customers",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AZURE_PROJECT_DATASET"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "STG_CUSTOMERS.csv",
+				"folderPath": "stg",
+				"fileSystem": "azureproject"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_FIRST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_LAST_NAME",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_DOB",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_TYPE",
+				"type": "String"
+			},
+			{
+				"name": "IS_LOYAL_MEMBER",
+				"type": "String"
+			},
+			{
+				"name": "FIRST_PURCHASE_DATE",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

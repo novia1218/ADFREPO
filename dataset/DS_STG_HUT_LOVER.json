@@ -1,0 +1,61 @@
+{
+	"name": "DS_STG_HUT_LOVER",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AZURE_PROJECT_DATASET"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "STG_HUT_LOVER.csv",
+				"folderPath": "stg",
+				"fileSystem": "azureproject"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "CUSTOMER_REVIEW_ID",
+				"type": "String"
+			},
+			{
+				"name": "RATING_SCALE",
+				"type": "String"
+			},
+			{
+				"name": "FEEDBACK",
+				"type": "String"
+			},
+			{
+				"name": "FEEDBACK_DATE",
+				"type": "String"
+			},
+			{
+				"name": "RECOMMENDED",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			},
+			{
+				"name": "ORDER_ID",
+				"type": "String"
+			},
+			{
+				"name": "STORE_LOCATION_ID",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

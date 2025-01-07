@@ -1,0 +1,350 @@
+{
+	"name": "DF_CUSTOMER_STG2",
+	"properties": {
+		"folder": {
+			"name": "AZURE_PROJECT_DATAFLOW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_STG_CUSTOMER_TBLS_DELIMITED",
+						"type": "DatasetReference"
+					},
+					"name": "sourceCUSTOMERS"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_STG_CUSTOMER_ADDRESS",
+						"type": "DatasetReference"
+					},
+					"name": "sourceADDRESS"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_STG_CUSTOMER_EMAIL",
+						"type": "DatasetReference"
+					},
+					"name": "sourceEMAIL"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_STG_CUSTOMER_PHONE_NUMBER",
+						"type": "DatasetReference"
+					},
+					"name": "sourcePHONE"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_STG_HUT_LOVER",
+						"type": "DatasetReference"
+					},
+					"name": "sourceHUTLOVER"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "C_customer_AzureSqlDb",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter1Phone"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "join4"
+				},
+				{
+					"name": "window2"
+				},
+				{
+					"name": "filter3Email"
+				},
+				{
+					"name": "window3"
+				},
+				{
+					"name": "filter2Email"
+				},
+				{
+					"name": "filter2Phone"
+				},
+				{
+					"name": "filter1Address"
+				},
+				{
+					"name": "window4"
+				},
+				{
+					"name": "filterAddress"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "select3"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CUSTOMER_ID as integer,",
+				"          CUSTOMER_FIRST_NAME as string,",
+				"          CUSTOMER_LAST_NAME as string,",
+				"          CUSTOMER_DOB as date,",
+				"          CUSTOMER_TYPE as string,",
+				"          IS_LOYAL_MEMBER as string,",
+				"          FIRST_PURCHASE_DATE as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> sourceCUSTOMERS",
+				"source(output(",
+				"          CUSTOMER_ADDRESS_ID as integer,",
+				"          ADDRESS_LINE1 as string,",
+				"          ADDRESS_LINE2 as string,",
+				"          CITY_NAME as string,",
+				"          STATE_NAME as string,",
+				"          COUNTRY_NAME as string,",
+				"          ZIP_CODE as integer,",
+				"          GATE_CODE as integer,",
+				"          ADDRESS_TYPE as string,",
+				"          ADDRESS_STATUS as string,",
+				"          CUSTOMER_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceADDRESS",
+				"source(output(",
+				"          CUSTOMER_EMAIL_ID as integer,",
+				"          CUSTOMER_EMAIL as string,",
+				"          CUSTOMER_EMAIL_TYPE as string,",
+				"          CUSTOMER_EMAIL_STATUS as string,",
+				"          CUSTOMER_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceEMAIL",
+				"source(output(",
+				"          CUSTOMER_PHONE_NUMBER_ID as integer,",
+				"          CUSTOMER_PHONE_NUMBER as string,",
+				"          CUSTOMER_PHONE_NUMBER_TYPE as string,",
+				"          CUSTOMER_PHONE_NUMBER_STATUS as string,",
+				"          CUSTOMER_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcePHONE",
+				"source(output(",
+				"          HUT_LOVERS_ID as integer,",
+				"          JOINING_DATE as date,",
+				"          IS_ACTIVE as string,",
+				"          CUSTOMER_ID as integer,",
+				"          MEMBER_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceHUTLOVER",
+				"window3 filter(rn==1) ~> filter1Phone",
+				"sourcePHONE select(mapColumn(",
+				"          CUSTOMER_PHONE_NUMBER_ID,",
+				"          CUSTOMER_PHONE_NUMBER,",
+				"          CUSTOMER_PHONE_TYPE = CUSTOMER_PHONE_NUMBER_TYPE,",
+				"          CUSTOMER_PHONE_STATUS = CUSTOMER_PHONE_NUMBER_STATUS,",
+				"          CUSTOMER_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"sourceCUSTOMERS, derivedColumn1 join(sourceCUSTOMERS@CUSTOMER_ID == sourceADDRESS@CUSTOMER_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, filter3Email join(sourceCUSTOMERS@CUSTOMER_ID == sourceEMAIL@CUSTOMER_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2, filter1Phone join(sourceCUSTOMERS@CUSTOMER_ID == select1@CUSTOMER_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3, sourceHUTLOVER join(sourceCUSTOMERS@CUSTOMER_ID == sourceHUTLOVER@CUSTOMER_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join4",
+				"filter2Email window(over(CUSTOMER_ID),",
+				"     asc(CUSTOMER_EMAIL_TYPE, true),",
+				"     SecondaryEmailType = lead(CUSTOMER_EMAIL_TYPE),",
+				"          SecondaryEmail = lead(CUSTOMER_EMAIL),",
+				"          RnEmail = rowNumber()) ~> window2",
+				"window2 filter(RnEmail==1) ~> filter3Email",
+				"filter2Phone window(over(CUSTOMER_ID),",
+				"     asc(CUSTOMER_PHONE_TYPE, true),",
+				"     Secondary_Phone_Type = lead(CUSTOMER_PHONE_TYPE),",
+				"          Secondary_Phone = lead(CUSTOMER_PHONE_NUMBER),",
+				"          rn = rowNumber()) ~> window3",
+				"sourceEMAIL filter(CUSTOMER_EMAIL_STATUS=='Active',",
+				"     partitionBy('hash', 1)) ~> filter2Email",
+				"select1 filter(CUSTOMER_PHONE_STATUS=='Active') ~> filter2Phone",
+				"sourceADDRESS filter(ADDRESS_STATUS=='Active') ~> filter1Address",
+				"filter1Address window(over(CUSTOMER_ID),",
+				"     asc(ADDRESS_TYPE, true),",
+				"     O_Address_lane1 = lead(ADDRESS_LINE1),",
+				"          O_Address_Lane_2 = lead(ADDRESS_LINE2),",
+				"          O_City_Name = lead(CITY_NAME),",
+				"          O_State_Name = lead(STATE_NAME),",
+				"          O_Country_Name = lead(COUNTRY_NAME),",
+				"          O_Zip_Code = lead(ZIP_CODE),",
+				"          O_Gate_Code = lead(GATE_CODE),",
+				"          address_rnk = rowNumber()) ~> window4",
+				"window4 filter(address_rnk==1) ~> filterAddress",
+				"filterAddress derive(O_Address_lane1 = case(ADDRESS_TYPE =='Office',ADDRESS_LINE1,O_Address_lane1),",
+				"          O_Address_Lane_2 = case(ADDRESS_TYPE =='Office',ADDRESS_LINE2,O_Address_Lane_2),",
+				"          O_City_Name = case(ADDRESS_TYPE =='Office',CITY_NAME,O_City_Name),",
+				"          O_State_Name = case(ADDRESS_TYPE =='Office',STATE_NAME,O_State_Name),",
+				"          O_Country_Name = case(ADDRESS_TYPE =='Office',COUNTRY_NAME,O_Country_Name),",
+				"          O_Zip_Code = case(ADDRESS_TYPE =='Office',ZIP_CODE,O_Zip_Code),",
+				"          O_Gate_Code = case(ADDRESS_TYPE =='Office',GATE_CODE,O_Gate_Code),",
+				"          ADDRESS_LINE1 = case(ADDRESS_TYPE =='Office','null',ADDRESS_LINE1),",
+				"          ADDRESS_LINE2 = case(ADDRESS_TYPE =='Office','null',ADDRESS_LINE2),",
+				"          CITY_NAME = case(ADDRESS_TYPE =='Office','null',CITY_NAME),",
+				"          STATE_NAME = case(ADDRESS_TYPE =='Office','null',STATE_NAME),",
+				"          COUNTRY_NAME = case(ADDRESS_TYPE =='Office','null',COUNTRY_NAME),",
+				"          ZIP_CODE = case(ADDRESS_TYPE =='Office',0,ZIP_CODE),",
+				"          GATE_CODE = case(ADDRESS_TYPE =='Office',0,GATE_CODE)) ~> derivedColumn1",
+				"join4 select(mapColumn(",
+				"          CUSTOMER_ID = sourceCUSTOMERS@CUSTOMER_ID,",
+				"          CUSTOMER_FIRST_NAME,",
+				"          CUSTOMER_LAST_NAME,",
+				"          CUSTOMER_DOB,",
+				"          CUSTOMER_TYPE,",
+				"          IS_LOYAL_MEMBER,",
+				"          FIRST_PURCHASE_DATE,",
+				"          CUSTOMER_ADDRESS_ID,",
+				"          ADDRESS_LINE1,",
+				"          ADDRESS_LINE2,",
+				"          CITY_NAME,",
+				"          STATE_NAME,",
+				"          COUNTRY_NAME,",
+				"          ZIP_CODE,",
+				"          GATE_CODE,",
+				"          ADDRESS_TYPE,",
+				"          ADDRESS_STATUS,",
+				"          CUSTOMER_ID = sourceADDRESS@CUSTOMER_ID,",
+				"          O_Address_lane1,",
+				"          O_Address_Lane_2,",
+				"          O_City_Name,",
+				"          O_State_Name,",
+				"          O_Country_Name,",
+				"          O_Zip_Code,",
+				"          O_Gate_Code,",
+				"          address_rnk,",
+				"          CUSTOMER_EMAIL_ID,",
+				"          CUSTOMER_EMAIL,",
+				"          CUSTOMER_EMAIL_TYPE,",
+				"          CUSTOMER_EMAIL_STATUS,",
+				"          CUSTOMER_ID = sourceEMAIL@CUSTOMER_ID,",
+				"          CUSTOMER_PHONE_NUMBER_ID,",
+				"          CUSTOMER_PHONE_NUMBER,",
+				"          CUSTOMER_PHONE_TYPE,",
+				"          CUSTOMER_PHONE_STATUS,",
+				"          CUSTOMER_ID = select1@CUSTOMER_ID,",
+				"          HUT_LOVERS_ID,",
+				"          JOINING_DATE,",
+				"          IS_ACTIVE,",
+				"          CUSTOMER_ID = sourceHUTLOVER@CUSTOMER_ID,",
+				"          MEMBER_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 keyGenerate(output(CUSTOMER_DIM_KEY as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(STG_CREATE_DATE = currentDate()) ~> derivedColumn2",
+				"derivedColumn2 select(mapColumn(",
+				"          CUSTOMER_ID,",
+				"          CUSTOMER_FIRST_NAME,",
+				"          CUSTOMER_LAST_NAME,",
+				"          CUSTOMER_DOB,",
+				"          CUSTOMER_TYPE,",
+				"          IS_LOYAL_MEMBER,",
+				"          FIRST_PURCHASE_DATE,",
+				"          CUSTOMER_ADDRESS_ID,",
+				"          ADDRESS_LINE1,",
+				"          ADDRESS_LINE2,",
+				"          CITY_NAME,",
+				"          STATE_NAME,",
+				"          COUNTRY_NAME,",
+				"          ZIP_CODE,",
+				"          GATE_CODE,",
+				"          ADDRESS_TYPE,",
+				"          ADDRESS_STATUS,",
+				"          O_Address_lane1,",
+				"          O_Address_Lane_2,",
+				"          O_City_Name,",
+				"          O_State_Name,",
+				"          O_Country_Name,",
+				"          O_Zip_Code,",
+				"          O_Gate_Code,",
+				"          address_rnk,",
+				"          CUSTOMER_EMAIL_ID,",
+				"          CUSTOMER_EMAIL,",
+				"          CUSTOMER_EMAIL_TYPE,",
+				"          CUSTOMER_EMAIL_STATUS,",
+				"          CUSTOMER_PHONE_NUMBER_ID,",
+				"          CUSTOMER_PHONE_NUMBER,",
+				"          CUSTOMER_PHONE_TYPE,",
+				"          CUSTOMER_PHONE_STATUS,",
+				"          HUT_LOVERS_ID,",
+				"          JOINING_DATE,",
+				"          IS_ACTIVE,",
+				"          MEMBER_ID,",
+				"          CUSTOMER_DIM_KEY,",
+				"          STG_CREATE_DATE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select3 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+			]
+		}
+	}
+}

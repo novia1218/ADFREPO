@@ -1,0 +1,81 @@
+{
+	"name": "DS_STG_MEMBER_LOYALTY",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "AZURE_PROJECT_DATASET"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "STG_MEMBER_LOYALTY.csv",
+				"folderPath": "stg",
+				"fileSystem": "azureproject"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "MEMBER_ID",
+				"type": "String"
+			},
+			{
+				"name": "ORDER_DATE",
+				"type": "String"
+			},
+			{
+				"name": "INITIAL_POINTS_RECEIVED_DATE",
+				"type": "String"
+			},
+			{
+				"name": "INITIAL_REWARD_POINTS",
+				"type": "String"
+			},
+			{
+				"name": "LAST_EARNED_POINTS",
+				"type": "String"
+			},
+			{
+				"name": "TOTAL_POINTS_EARNED",
+				"type": "String"
+			},
+			{
+				"name": "REMAINING_POINTS",
+				"type": "String"
+			},
+			{
+				"name": "IS_ACTIVE",
+				"type": "String"
+			},
+			{
+				"name": "STORE_LOCATION_ID",
+				"type": "String"
+			},
+			{
+				"name": "ORDER_ID",
+				"type": "String"
+			},
+			{
+				"name": "TOTAL_AMOUNT",
+				"type": "String"
+			},
+			{
+				"name": "HUT_LOVER_ID",
+				"type": "String"
+			},
+			{
+				"name": "CUSTOMER_ID",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

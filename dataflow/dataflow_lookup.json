@@ -1,0 +1,104 @@
+{
+	"name": "dataflow_lookup",
+	"properties": {
+		"folder": {
+			"name": "DATAFLOW_PRACTICE"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Delimited_Src",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable_Sink",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "lookup1"
+				},
+				{
+					"name": "cast1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EMPLOYEE_ID as integer,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          EMAIL as string,",
+				"          PHONE_NUMBER as string,",
+				"          HIRE_DATE as string,",
+				"          JOB_ID as string,",
+				"          SALARY as double,",
+				"          COMMISSION_PCT as double,",
+				"          MANAGER_ID as short,",
+				"          DEPARTMENT_ID as short",
+				"     ),",
+				"     allowSchemaDrift: false,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     partitionBy('hash', 1)) ~> source1",
+				"source(output(",
+				"          DEPARTMENT_ID as integer,",
+				"          DEPARTMENT_NAME as string,",
+				"          MANAGER_ID as integer,",
+				"          LOCATION_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source2",
+				"cast1, source2 lookup(cast1@DEPARTMENT_ID == source2@DEPARTMENT_ID,",
+				"     multiple: false,",
+				"     pickup: 'first',",
+				"     asc(source2@DEPARTMENT_ID, true),",
+				"     partitionBy('hash', 1),",
+				"     broadcast: 'auto')~> lookup1",
+				"source1 cast(output(",
+				"          EMPLOYEE_ID as integer,",
+				"          FIRST_NAME as string,",
+				"          LAST_NAME as string,",
+				"          EMAIL as string,",
+				"          PHONE_NUMBER as integer,",
+				"          HIRE_DATE as string,",
+				"          JOB_ID as string,",
+				"          SALARY as decimal(10,0),",
+				"          COMMISSION_PCT as decimal(10,0),",
+				"          MANAGER_ID as integer,",
+				"          DEPARTMENT_ID as integer",
+				"     ),",
+				"     errors: true) ~> cast1",
+				"lookup1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}

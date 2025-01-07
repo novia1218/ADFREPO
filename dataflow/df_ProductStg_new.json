@@ -1,0 +1,167 @@
+{
+	"name": "df_ProductStg_new",
+	"properties": {
+		"folder": {
+			"name": "AZURE_PROJECT_DATAFLOW"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "P_product",
+						"type": "DatasetReference"
+					},
+					"name": "Product"
+				},
+				{
+					"dataset": {
+						"referenceName": "P_product_category",
+						"type": "DatasetReference"
+					},
+					"name": "ProductCategory"
+				},
+				{
+					"dataset": {
+						"referenceName": "p_product_sub_category",
+						"type": "DatasetReference"
+					},
+					"name": "ProductSubCategory"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "P_product_sql_db",
+						"type": "DatasetReference"
+					},
+					"name": "ProductDimSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "surrogateKey1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PRODUCT_ID as integer,",
+				"          PRODUCT_NAME as string,",
+				"          PRODUCT_PRICE as double,",
+				"          PRODUCT_DESCRIPTION as string,",
+				"          CALORIES as integer,",
+				"          IS_ACTIVE as string,",
+				"          PRODUCT_SUBCATEGORY_ID as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Product",
+				"source(output(",
+				"          PRODUCT_CATEGORY_ID as integer,",
+				"          PRODUCT_CATEGORY_NAME as string,",
+				"          PRODUCT_CATEGORY_DESCRIPTION as string,",
+				"          IS_ACTIVE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ProductCategory",
+				"source(output(",
+				"          PRODUCT_SUBCATEGORY_ID as short,",
+				"          PRODUCT_SUBCATEGORY_NAME as string,",
+				"          PRODUCT_SIZE as string,",
+				"          PRODUCT_CATEGORY_ID as short,",
+				"          IS_ACTIVE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> ProductSubCategory",
+				"Product, ProductSubCategory join(Product@PRODUCT_SUBCATEGORY_ID == ProductSubCategory@PRODUCT_SUBCATEGORY_ID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, ProductCategory join(ProductSubCategory@PRODUCT_CATEGORY_ID == ProductCategory@PRODUCT_CATEGORY_ID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 select(mapColumn(",
+				"          PRODUCT_ID,",
+				"          PRODUCT_NAME,",
+				"          PRODUCT_PRICE,",
+				"          PRODUCT_DESCRIPTION,",
+				"          CALORIES,",
+				"          IS_ACTIVE = Product@IS_ACTIVE,",
+				"          PRODUCT_SUBCATEGORY_ID = ProductSubCategory@PRODUCT_SUBCATEGORY_ID,",
+				"          PRODUCT_SUBCATEGORY_NAME,",
+				"          PRODUCT_SIZE,",
+				"          PRODUCT_CATEGORY_ID = ProductCategory@PRODUCT_CATEGORY_ID,",
+				"          PRODUCT_CATEGORY_NAME",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 keyGenerate(output(Product_Dim_Key as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKey1",
+				"surrogateKey1 derive(STG_CREATE_DATE = currentDate()) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          PRODUCT_ID,",
+				"          PRODUCT_NAME,",
+				"          PRODUCT_PRICE,",
+				"          PRODUCT_DESCRIPTION,",
+				"          CALORIES,",
+				"          IS_ACTIVE,",
+				"          PRODUCT_SUBCATEGORY_ID,",
+				"          PRODUCT_SUBCATEGORY_NAME,",
+				"          PRODUCT_SIZE,",
+				"          PRODUCT_CATEGORY_ID,",
+				"          PRODUCT_CATEGORY_NAME,",
+				"          Product_Dim_Key,",
+				"          STG_CREATE_DATE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     recreate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          PRODUCT_ID,",
+				"          PRODUCT_NAME,",
+				"          PRODUCT_PRICE,",
+				"          PRODUCT_DESCRIPTION,",
+				"          IS_ACTIVE,",
+				"          PRODUCT_SUBCATEGORY_NAME,",
+				"          PRODUCT_SUBCATEGORY_ID,",
+				"          PRODUCT_SIZE,",
+				"          PRODUCT_CATEGORY_ID,",
+				"          PRODUCT_CATEGORY_NAME,",
+				"          Product_Dim_Key,",
+				"          STG_CREATE_DATE",
+				"     )) ~> ProductDimSink"
+			]
+		}
+	}
+}

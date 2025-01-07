@@ -1,0 +1,26 @@
+{
+	"name": "DS_AZURE_PROJECT_ORACLE_SRC",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Oracle",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SOURCETABLENAME": {
+				"type": "string",
+				"defaultValue": "CONFIG"
+			}
+		},
+		"folder": {
+			"name": "AZURE_PROJECT_DATASET"
+		},
+		"annotations": [],
+		"type": "OracleTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "HR",
+			"table": "EMP_DATA"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

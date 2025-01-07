@@ -1,0 +1,9 @@
+{
+	"name": "novia-DataFactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5f50ea3f-5399-4451-a221-028562544c6f",
+		"tenantId": "fbff1bfb-1cbe-4ab1-b6c0-daa1a9c58dee"
+	}
+}

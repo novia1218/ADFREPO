@@ -1,0 +1,3950 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "novia-DataFactory"
+		},
+		"ADLS_LINKED_SERVICE_GEN2_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ADLS_LINKED_SERVICE_GEN2'"
+		},
+		"AzureSqlDatabase1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'AzureSqlDatabase1'"
+		},
+		"ORACLE_TGT_HR_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ORACLE_TGT_HR'"
+		},
+		"Oracle_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'Oracle'"
+		},
+		"ADLS_LINKED_SERVICE_GEN2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://noviastorageadf.dfs.core.windows.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "sqlserver1218.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "sqlserver"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "noviasql"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_SRC')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "hr",
+					"table": "employees"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "HR",
+					"table": "CUSTOMER_DIM"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/C_customerEmail')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMER_EMAIL.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_EMAIL_ID",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_EMAIL",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_EMAIL_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_EMAIL_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/C_customerPhone')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMER_PHONE_NUMBER.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_PHONE_NUMBER_ID",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_PHONE_NUMBER",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_PHONE_NUMBER_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_PHONE_NUMBER_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/C_customer_AzureSqlDb')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "hr",
+					"table": "customer_dim"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/C_customer_address')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMER_ADDRESS.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_ADDRESS_ID",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_LINE1",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_LINE2",
+						"type": "String"
+					},
+					{
+						"name": "CITY_NAME",
+						"type": "String"
+					},
+					{
+						"name": "STATE_NAME",
+						"type": "String"
+					},
+					{
+						"name": "COUNTRY_NAME",
+						"type": "String"
+					},
+					{
+						"name": "ZIP_CODE",
+						"type": "String"
+					},
+					{
+						"name": "GATE_CODE",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/C_customers')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMERS.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_FIRST_NAME",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_LAST_NAME",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_DOB",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "IS_LOYAL_MEMBER",
+						"type": "String"
+					},
+					{
+						"name": "FIRST_PURCHASE_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/C_hutlover')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_HUT_LOVER.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "HUT_LOVERS_ID",
+						"type": "String"
+					},
+					{
+						"name": "JOINING_DATE",
+						"type": "String"
+					},
+					{
+						"name": "IS_ACTIVE",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					},
+					{
+						"name": "MEMBER_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_AZURE_PROJECT_ORACLE_SRC')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Oracle",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"SOURCETABLENAME": {
+						"type": "string",
+						"defaultValue": "CONFIG"
+					}
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "HR",
+					"table": "EMP_DATA"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oracle')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_AZURE_PROJECT_ORACLE_TABLE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Oracle",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TABLENAME": {
+						"type": "string",
+						"defaultValue": "JOBS"
+					}
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "HR",
+					"table": {
+						"value": "@dataset().TABLENAME",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oracle')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_AZURE_PROJECT_SINK_STG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TARGETFILENAME": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().TARGETFILENAME,'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_AzureSqlTable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "hr",
+					"table": "EMPLOYEES"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DataFlow_Delimited_SINK')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TargetTable": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().TargetTable,'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": "HR_SCHEMA",
+						"fileSystem": "gen2source"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DataFlow_Oracle_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Oracle",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"SRC_Table_Name": {
+						"type": "string",
+						"defaultValue": "DATA_LOAD_TEST1"
+					}
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "HR",
+					"table": "EMPLOYEES"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oracle')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_DataFlow_Table_ORACLE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Oracle",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TableName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "HR",
+					"table": {
+						"value": "@dataset().TableName",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oracle')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Delimited_Sink_Tables')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "gen2target"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Delimited_Src')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "DEPARTMENTS",
+						"fileSystem": "gen2source"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Insurance_Delimited_Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TargetTableName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@concat(dataset().TargetTableName,'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": "INSURANCE_DATA",
+						"fileSystem": "gen2source"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Insurance_Oracle')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Oracle",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"TABLENAME": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oracle')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Insurance_SRC')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Oracle",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"SOURCETABLENAME": {
+						"type": "string",
+						"defaultValue": "INSURANCE_DATAFLOW"
+					}
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Oracle')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Oracle_Tgt_Hr')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ORACLE_TGT_HR",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "OracleTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "TGTHR",
+					"table": "TGT_EMPLOYEES"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ORACLE_TGT_HR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_STG_CUSTOMER_ADDRESS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMER_ADDRESS.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_ADDRESS_ID",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_LINE1",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_LINE2",
+						"type": "String"
+					},
+					{
+						"name": "CITY_NAME",
+						"type": "String"
+					},
+					{
+						"name": "STATE_NAME",
+						"type": "String"
+					},
+					{
+						"name": "COUNTRY_NAME",
+						"type": "String"
+					},
+					{
+						"name": "ZIP_CODE",
+						"type": "String"
+					},
+					{
+						"name": "GATE_CODE",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "ADDRESS_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_STG_CUSTOMER_EMAIL')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMER_EMAIL.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_EMAIL_ID",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_EMAIL",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_EMAIL_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_EMAIL_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_STG_CUSTOMER_PHONE_NUMBER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMER_PHONE_NUMBER.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_PHONE_NUMBER_ID",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_PHONE_NUMBER",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_PHONE_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_PHONE_STATUS",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					},
+					{
+						"name": "CREATE_USER_ID",
+						"type": "String"
+					},
+					{
+						"name": "CREATE_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_STG_CUSTOMER_TBLS_DELIMITED')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_CUSTOMERS.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_FIRST_NAME",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_LAST_NAME",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_DOB",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_TYPE",
+						"type": "String"
+					},
+					{
+						"name": "IS_LOYAL_MEMBER",
+						"type": "String"
+					},
+					{
+						"name": "FIRST_PURCHASE_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_STG_HUT_LOVER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_HUT_LOVER.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "CUSTOMER_REVIEW_ID",
+						"type": "String"
+					},
+					{
+						"name": "RATING_SCALE",
+						"type": "String"
+					},
+					{
+						"name": "FEEDBACK",
+						"type": "String"
+					},
+					{
+						"name": "FEEDBACK_DATE",
+						"type": "String"
+					},
+					{
+						"name": "RECOMMENDED",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					},
+					{
+						"name": "ORDER_ID",
+						"type": "String"
+					},
+					{
+						"name": "STORE_LOCATION_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_STG_MEMBER_LOYALTY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_MEMBER_LOYALTY.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "MEMBER_ID",
+						"type": "String"
+					},
+					{
+						"name": "ORDER_DATE",
+						"type": "String"
+					},
+					{
+						"name": "INITIAL_POINTS_RECEIVED_DATE",
+						"type": "String"
+					},
+					{
+						"name": "INITIAL_REWARD_POINTS",
+						"type": "String"
+					},
+					{
+						"name": "LAST_EARNED_POINTS",
+						"type": "String"
+					},
+					{
+						"name": "TOTAL_POINTS_EARNED",
+						"type": "String"
+					},
+					{
+						"name": "REMAINING_POINTS",
+						"type": "String"
+					},
+					{
+						"name": "IS_ACTIVE",
+						"type": "String"
+					},
+					{
+						"name": "STORE_LOCATION_ID",
+						"type": "String"
+					},
+					{
+						"name": "ORDER_ID",
+						"type": "String"
+					},
+					{
+						"name": "TOTAL_AMOUNT",
+						"type": "String"
+					},
+					{
+						"name": "HUT_LOVER_ID",
+						"type": "String"
+					},
+					{
+						"name": "CUSTOMER_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/L_Country')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_STATE_COUNTRY.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "STATE_COUNTRY_ID",
+						"type": "String"
+					},
+					{
+						"name": "STATE_NAME",
+						"type": "String"
+					},
+					{
+						"name": "STATE_ABBREVATION",
+						"type": "String"
+					},
+					{
+						"name": "STATE_COUNTRY",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/L_LocationDimSink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "hr",
+					"table": "Location_Dim"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/L_Store_location')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_STORE_LOCATION.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "STORE_LOCATION_ID",
+						"type": "String"
+					},
+					{
+						"name": "STORE_NAME",
+						"type": "String"
+					},
+					{
+						"name": "STORE_ADDRESS",
+						"type": "String"
+					},
+					{
+						"name": "STORE_PHONE_NUMBER",
+						"type": "String"
+					},
+					{
+						"name": "STORE_OPEN_TIME",
+						"type": "String"
+					},
+					{
+						"name": "STORE_CLOSE_TIME",
+						"type": "String"
+					},
+					{
+						"name": "STATE_COUNTRY_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/P_product')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_PRODUCT.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PRODUCT_ID",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_NAME",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_PRICE",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "CALORIES",
+						"type": "String"
+					},
+					{
+						"name": "IS_ACTIVE",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_SUBCATEGORY_ID",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/P_product_category')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_PRODUCT_CATEGORY.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PRODUCT_CATEGORY_ID",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_CATEGORY_NAME",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_CATEGORY_DESCRIPTION",
+						"type": "String"
+					},
+					{
+						"name": "IS_ACTIVE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/P_product_sql_db')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "hr",
+					"table": "product_dim"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/db_product_dim')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "hr",
+					"table": "product_dim"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/db_product_dim_scd2_flag')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Surr_Product_kEY",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Product_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Product_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "Product_Price",
+						"type": "decimal",
+						"precision": 5,
+						"scale": 2
+					},
+					{
+						"name": "Is_Active",
+						"type": "varchar"
+					},
+					{
+						"name": "PRODUCT_CATEGORY_ID",
+						"type": "varchar"
+					},
+					{
+						"name": "Product_Category_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "Product_SubCategory_ID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Product_SubCategory_Name",
+						"type": "varchar"
+					},
+					{
+						"name": "Product_Size",
+						"type": "varchar"
+					},
+					{
+						"name": "Product_Description",
+						"type": "varchar"
+					},
+					{
+						"name": "MD5",
+						"type": "varchar"
+					},
+					{
+						"name": "FLAG",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "Eff_Start_Date",
+						"type": "date"
+					},
+					{
+						"name": "Eff_End_Date",
+						"type": "date"
+					},
+					{
+						"name": "DM_CREATE_DATE",
+						"type": "date"
+					}
+				],
+				"typeProperties": {
+					"schema": "hr",
+					"table": "PRODUCT_DIM_SCD2"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/p_product_sub_category')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADLS_LINKED_SERVICE_GEN2",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "AZURE_PROJECT_DATASET"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "STG_PRODUCT_SUB_CATEGORY.csv",
+						"folderPath": "stg",
+						"fileSystem": "azureproject"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PRODUCT_SUBCATEGORY_ID",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_SUBCATEGORY_NAME",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_SIZE",
+						"type": "String"
+					},
+					{
+						"name": "PRODUCT_CATEGORY_ID",
+						"type": "String"
+					},
+					{
+						"name": "IS_ACTIVE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADLS_LINKED_SERVICE_GEN2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ADLS_LINKED_SERVICE_GEN2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ADLS_LINKED_SERVICE_GEN2_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('ADLS_LINKED_SERVICE_GEN2_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('AzureSqlDatabase1_properties_typeProperties_server')]",
+					"database": "[parameters('AzureSqlDatabase1_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": false,
+					"authenticationType": "SQL",
+					"userName": "[parameters('AzureSqlDatabase1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('AzureSqlDatabase1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ORACLE_TGT_HR')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Oracle",
+				"typeProperties": {
+					"connectionString": "[parameters('ORACLE_TGT_HR_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "SelfHostedIR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/SelfHostedIR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Oracle')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "Oracle",
+				"typeProperties": {
+					"connectionString": "[parameters('Oracle_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "SelfHostedIR",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/SelfHostedIR')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SelfHostedIR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_CUSTOMER_STG2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_STG_CUSTOMER_TBLS_DELIMITED",
+								"type": "DatasetReference"
+							},
+							"name": "sourceCUSTOMERS"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_STG_CUSTOMER_ADDRESS",
+								"type": "DatasetReference"
+							},
+							"name": "sourceADDRESS"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_STG_CUSTOMER_EMAIL",
+								"type": "DatasetReference"
+							},
+							"name": "sourceEMAIL"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_STG_CUSTOMER_PHONE_NUMBER",
+								"type": "DatasetReference"
+							},
+							"name": "sourcePHONE"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_STG_HUT_LOVER",
+								"type": "DatasetReference"
+							},
+							"name": "sourceHUTLOVER"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "C_customer_AzureSqlDb",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "filter1Phone"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "join3"
+						},
+						{
+							"name": "join4"
+						},
+						{
+							"name": "window2"
+						},
+						{
+							"name": "filter3Email"
+						},
+						{
+							"name": "window3"
+						},
+						{
+							"name": "filter2Email"
+						},
+						{
+							"name": "filter2Phone"
+						},
+						{
+							"name": "filter1Address"
+						},
+						{
+							"name": "window4"
+						},
+						{
+							"name": "filterAddress"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "select3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CUSTOMER_ID as integer,",
+						"          CUSTOMER_FIRST_NAME as string,",
+						"          CUSTOMER_LAST_NAME as string,",
+						"          CUSTOMER_DOB as date,",
+						"          CUSTOMER_TYPE as string,",
+						"          IS_LOYAL_MEMBER as string,",
+						"          FIRST_PURCHASE_DATE as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     partitionBy('hash', 1)) ~> sourceCUSTOMERS",
+						"source(output(",
+						"          CUSTOMER_ADDRESS_ID as integer,",
+						"          ADDRESS_LINE1 as string,",
+						"          ADDRESS_LINE2 as string,",
+						"          CITY_NAME as string,",
+						"          STATE_NAME as string,",
+						"          COUNTRY_NAME as string,",
+						"          ZIP_CODE as integer,",
+						"          GATE_CODE as integer,",
+						"          ADDRESS_TYPE as string,",
+						"          ADDRESS_STATUS as string,",
+						"          CUSTOMER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceADDRESS",
+						"source(output(",
+						"          CUSTOMER_EMAIL_ID as integer,",
+						"          CUSTOMER_EMAIL as string,",
+						"          CUSTOMER_EMAIL_TYPE as string,",
+						"          CUSTOMER_EMAIL_STATUS as string,",
+						"          CUSTOMER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceEMAIL",
+						"source(output(",
+						"          CUSTOMER_PHONE_NUMBER_ID as integer,",
+						"          CUSTOMER_PHONE_NUMBER as string,",
+						"          CUSTOMER_PHONE_NUMBER_TYPE as string,",
+						"          CUSTOMER_PHONE_NUMBER_STATUS as string,",
+						"          CUSTOMER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourcePHONE",
+						"source(output(",
+						"          HUT_LOVERS_ID as integer,",
+						"          JOINING_DATE as date,",
+						"          IS_ACTIVE as string,",
+						"          CUSTOMER_ID as integer,",
+						"          MEMBER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourceHUTLOVER",
+						"window3 filter(rn==1) ~> filter1Phone",
+						"sourcePHONE select(mapColumn(",
+						"          CUSTOMER_PHONE_NUMBER_ID,",
+						"          CUSTOMER_PHONE_NUMBER,",
+						"          CUSTOMER_PHONE_TYPE = CUSTOMER_PHONE_NUMBER_TYPE,",
+						"          CUSTOMER_PHONE_STATUS = CUSTOMER_PHONE_NUMBER_STATUS,",
+						"          CUSTOMER_ID",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"sourceCUSTOMERS, derivedColumn1 join(sourceCUSTOMERS@CUSTOMER_ID == sourceADDRESS@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, filter3Email join(sourceCUSTOMERS@CUSTOMER_ID == sourceEMAIL@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2, filter1Phone join(sourceCUSTOMERS@CUSTOMER_ID == select1@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join3",
+						"join3, sourceHUTLOVER join(sourceCUSTOMERS@CUSTOMER_ID == sourceHUTLOVER@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join4",
+						"filter2Email window(over(CUSTOMER_ID),",
+						"     asc(CUSTOMER_EMAIL_TYPE, true),",
+						"     SecondaryEmailType = lead(CUSTOMER_EMAIL_TYPE),",
+						"          SecondaryEmail = lead(CUSTOMER_EMAIL),",
+						"          RnEmail = rowNumber()) ~> window2",
+						"window2 filter(RnEmail==1) ~> filter3Email",
+						"filter2Phone window(over(CUSTOMER_ID),",
+						"     asc(CUSTOMER_PHONE_TYPE, true),",
+						"     Secondary_Phone_Type = lead(CUSTOMER_PHONE_TYPE),",
+						"          Secondary_Phone = lead(CUSTOMER_PHONE_NUMBER),",
+						"          rn = rowNumber()) ~> window3",
+						"sourceEMAIL filter(CUSTOMER_EMAIL_STATUS=='Active',",
+						"     partitionBy('hash', 1)) ~> filter2Email",
+						"select1 filter(CUSTOMER_PHONE_STATUS=='Active') ~> filter2Phone",
+						"sourceADDRESS filter(ADDRESS_STATUS=='Active') ~> filter1Address",
+						"filter1Address window(over(CUSTOMER_ID),",
+						"     asc(ADDRESS_TYPE, true),",
+						"     O_Address_lane1 = lead(ADDRESS_LINE1),",
+						"          O_Address_Lane_2 = lead(ADDRESS_LINE2),",
+						"          O_City_Name = lead(CITY_NAME),",
+						"          O_State_Name = lead(STATE_NAME),",
+						"          O_Country_Name = lead(COUNTRY_NAME),",
+						"          O_Zip_Code = lead(ZIP_CODE),",
+						"          O_Gate_Code = lead(GATE_CODE),",
+						"          address_rnk = rowNumber()) ~> window4",
+						"window4 filter(address_rnk==1) ~> filterAddress",
+						"filterAddress derive(O_Address_lane1 = case(ADDRESS_TYPE =='Office',ADDRESS_LINE1,O_Address_lane1),",
+						"          O_Address_Lane_2 = case(ADDRESS_TYPE =='Office',ADDRESS_LINE2,O_Address_Lane_2),",
+						"          O_City_Name = case(ADDRESS_TYPE =='Office',CITY_NAME,O_City_Name),",
+						"          O_State_Name = case(ADDRESS_TYPE =='Office',STATE_NAME,O_State_Name),",
+						"          O_Country_Name = case(ADDRESS_TYPE =='Office',COUNTRY_NAME,O_Country_Name),",
+						"          O_Zip_Code = case(ADDRESS_TYPE =='Office',ZIP_CODE,O_Zip_Code),",
+						"          O_Gate_Code = case(ADDRESS_TYPE =='Office',GATE_CODE,O_Gate_Code),",
+						"          ADDRESS_LINE1 = case(ADDRESS_TYPE =='Office','null',ADDRESS_LINE1),",
+						"          ADDRESS_LINE2 = case(ADDRESS_TYPE =='Office','null',ADDRESS_LINE2),",
+						"          CITY_NAME = case(ADDRESS_TYPE =='Office','null',CITY_NAME),",
+						"          STATE_NAME = case(ADDRESS_TYPE =='Office','null',STATE_NAME),",
+						"          COUNTRY_NAME = case(ADDRESS_TYPE =='Office','null',COUNTRY_NAME),",
+						"          ZIP_CODE = case(ADDRESS_TYPE =='Office',0,ZIP_CODE),",
+						"          GATE_CODE = case(ADDRESS_TYPE =='Office',0,GATE_CODE)) ~> derivedColumn1",
+						"join4 select(mapColumn(",
+						"          CUSTOMER_ID = sourceCUSTOMERS@CUSTOMER_ID,",
+						"          CUSTOMER_FIRST_NAME,",
+						"          CUSTOMER_LAST_NAME,",
+						"          CUSTOMER_DOB,",
+						"          CUSTOMER_TYPE,",
+						"          IS_LOYAL_MEMBER,",
+						"          FIRST_PURCHASE_DATE,",
+						"          CUSTOMER_ADDRESS_ID,",
+						"          ADDRESS_LINE1,",
+						"          ADDRESS_LINE2,",
+						"          CITY_NAME,",
+						"          STATE_NAME,",
+						"          COUNTRY_NAME,",
+						"          ZIP_CODE,",
+						"          GATE_CODE,",
+						"          ADDRESS_TYPE,",
+						"          ADDRESS_STATUS,",
+						"          CUSTOMER_ID = sourceADDRESS@CUSTOMER_ID,",
+						"          O_Address_lane1,",
+						"          O_Address_Lane_2,",
+						"          O_City_Name,",
+						"          O_State_Name,",
+						"          O_Country_Name,",
+						"          O_Zip_Code,",
+						"          O_Gate_Code,",
+						"          address_rnk,",
+						"          CUSTOMER_EMAIL_ID,",
+						"          CUSTOMER_EMAIL,",
+						"          CUSTOMER_EMAIL_TYPE,",
+						"          CUSTOMER_EMAIL_STATUS,",
+						"          CUSTOMER_ID = sourceEMAIL@CUSTOMER_ID,",
+						"          CUSTOMER_PHONE_NUMBER_ID,",
+						"          CUSTOMER_PHONE_NUMBER,",
+						"          CUSTOMER_PHONE_TYPE,",
+						"          CUSTOMER_PHONE_STATUS,",
+						"          CUSTOMER_ID = select1@CUSTOMER_ID,",
+						"          HUT_LOVERS_ID,",
+						"          JOINING_DATE,",
+						"          IS_ACTIVE,",
+						"          CUSTOMER_ID = sourceHUTLOVER@CUSTOMER_ID,",
+						"          MEMBER_ID",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 keyGenerate(output(CUSTOMER_DIM_KEY as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"surrogateKey1 derive(STG_CREATE_DATE = currentDate()) ~> derivedColumn2",
+						"derivedColumn2 select(mapColumn(",
+						"          CUSTOMER_ID,",
+						"          CUSTOMER_FIRST_NAME,",
+						"          CUSTOMER_LAST_NAME,",
+						"          CUSTOMER_DOB,",
+						"          CUSTOMER_TYPE,",
+						"          IS_LOYAL_MEMBER,",
+						"          FIRST_PURCHASE_DATE,",
+						"          CUSTOMER_ADDRESS_ID,",
+						"          ADDRESS_LINE1,",
+						"          ADDRESS_LINE2,",
+						"          CITY_NAME,",
+						"          STATE_NAME,",
+						"          COUNTRY_NAME,",
+						"          ZIP_CODE,",
+						"          GATE_CODE,",
+						"          ADDRESS_TYPE,",
+						"          ADDRESS_STATUS,",
+						"          O_Address_lane1,",
+						"          O_Address_Lane_2,",
+						"          O_City_Name,",
+						"          O_State_Name,",
+						"          O_Country_Name,",
+						"          O_Zip_Code,",
+						"          O_Gate_Code,",
+						"          address_rnk,",
+						"          CUSTOMER_EMAIL_ID,",
+						"          CUSTOMER_EMAIL,",
+						"          CUSTOMER_EMAIL_TYPE,",
+						"          CUSTOMER_EMAIL_STATUS,",
+						"          CUSTOMER_PHONE_NUMBER_ID,",
+						"          CUSTOMER_PHONE_NUMBER,",
+						"          CUSTOMER_PHONE_TYPE,",
+						"          CUSTOMER_PHONE_STATUS,",
+						"          HUT_LOVERS_ID,",
+						"          JOINING_DATE,",
+						"          IS_ACTIVE,",
+						"          MEMBER_ID,",
+						"          CUSTOMER_DIM_KEY,",
+						"          STG_CREATE_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3",
+						"select3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_STG_CUSTOMER_TBLS_DELIMITED')]",
+				"[concat(variables('factoryId'), '/datasets/DS_STG_CUSTOMER_ADDRESS')]",
+				"[concat(variables('factoryId'), '/datasets/DS_STG_CUSTOMER_EMAIL')]",
+				"[concat(variables('factoryId'), '/datasets/DS_STG_CUSTOMER_PHONE_NUMBER')]",
+				"[concat(variables('factoryId'), '/datasets/DS_STG_HUT_LOVER')]",
+				"[concat(variables('factoryId'), '/datasets/C_customer_AzureSqlDb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Filter')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "DATAFLOW_PRACTICE"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_Delimited_Src",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_SRC",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "filter1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EMPLOYEE_ID as short,",
+						"          FIRST_NAME as string,",
+						"          LAST_NAME as string,",
+						"          EMAIL as string,",
+						"          PHONE_NUMBER as string,",
+						"          HIRE_DATE as string,",
+						"          JOB_ID as string,",
+						"          SALARY as double,",
+						"          COMMISSION_PCT as double,",
+						"          MANAGER_ID as short,",
+						"          DEPARTMENT_ID as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 cast(output(",
+						"          EMPLOYEE_ID as short",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 filter(EMPLOYEE_ID==100,",
+						"     partitionBy('hash', 1)) ~> filter1",
+						"filter1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Delimited_Src')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_SRC')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DF_Test_sqlServer')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "DATAFLOW_PRACTICE"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_Delimited_Src",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_SRC",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "filter1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EMPLOYEE_ID as short,",
+						"          FIRST_NAME as string,",
+						"          LAST_NAME as string,",
+						"          EMAIL as string,",
+						"          PHONE_NUMBER as string,",
+						"          HIRE_DATE as string,",
+						"          JOB_ID as string,",
+						"          SALARY as double,",
+						"          COMMISSION_PCT as double,",
+						"          MANAGER_ID as short,",
+						"          DEPARTMENT_ID as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 cast(output(",
+						"          EMPLOYEE_ID as integer",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"cast1 filter(EMPLOYEE_ID==100,",
+						"     partitionBy('hash', 1)) ~> filter1",
+						"filter1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Delimited_Src')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_SRC')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_lookup')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "DATAFLOW_PRACTICE"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_SRC",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_Delimited_Src",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_Sink",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "cast1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EMPLOYEE_ID as integer,",
+						"          FIRST_NAME as string,",
+						"          LAST_NAME as string,",
+						"          EMAIL as string,",
+						"          PHONE_NUMBER as string,",
+						"          HIRE_DATE as string,",
+						"          JOB_ID as string,",
+						"          SALARY as double,",
+						"          COMMISSION_PCT as double,",
+						"          MANAGER_ID as short,",
+						"          DEPARTMENT_ID as short",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table',",
+						"     partitionBy('hash', 1)) ~> source1",
+						"source(output(",
+						"          DEPARTMENT_ID as integer,",
+						"          DEPARTMENT_NAME as string,",
+						"          MANAGER_ID as integer,",
+						"          LOCATION_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source2",
+						"cast1, source2 lookup(cast1@DEPARTMENT_ID == source2@DEPARTMENT_ID,",
+						"     multiple: false,",
+						"     pickup: 'first',",
+						"     asc(source2@DEPARTMENT_ID, true),",
+						"     partitionBy('hash', 1),",
+						"     broadcast: 'auto')~> lookup1",
+						"source1 cast(output(",
+						"          EMPLOYEE_ID as integer,",
+						"          FIRST_NAME as string,",
+						"          LAST_NAME as string,",
+						"          EMAIL as string,",
+						"          PHONE_NUMBER as integer,",
+						"          HIRE_DATE as string,",
+						"          JOB_ID as string,",
+						"          SALARY as decimal(10,0),",
+						"          COMMISSION_PCT as decimal(10,0),",
+						"          MANAGER_ID as integer,",
+						"          DEPARTMENT_ID as integer",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"lookup1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_SRC')]",
+				"[concat(variables('factoryId'), '/datasets/DS_Delimited_Src')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_Sink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_CustomerStg')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "project",
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "C_customers",
+								"type": "DatasetReference"
+							},
+							"name": "customers"
+						},
+						{
+							"dataset": {
+								"referenceName": "C_customer_address",
+								"type": "DatasetReference"
+							},
+							"name": "customerAddress"
+						},
+						{
+							"dataset": {
+								"referenceName": "C_customerEmail",
+								"type": "DatasetReference"
+							},
+							"name": "customerEmail"
+						},
+						{
+							"dataset": {
+								"referenceName": "C_customerPhone",
+								"type": "DatasetReference"
+							},
+							"name": "customerPhone"
+						},
+						{
+							"dataset": {
+								"referenceName": "C_hutlover",
+								"type": "DatasetReference"
+							},
+							"name": "hutlover"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "C_customer_AzureSqlDb",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "window1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "window2"
+						},
+						{
+							"name": "filter2"
+						},
+						{
+							"name": "filter3"
+						},
+						{
+							"name": "filter4"
+						},
+						{
+							"name": "filter5"
+						},
+						{
+							"name": "window3"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "filter6"
+						},
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "join3"
+						},
+						{
+							"name": "join4"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          CUSTOMER_ID as integer,",
+						"          CUSTOMER_FIRST_NAME as string,",
+						"          CUSTOMER_LAST_NAME as string,",
+						"          CUSTOMER_DOB as date,",
+						"          CUSTOMER_TYPE as string,",
+						"          IS_LOYAL_MEMBER as string,",
+						"          FIRST_PURCHASE_DATE as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> customers",
+						"source(output(",
+						"          CUSTOMER_ADDRESS_ID as integer,",
+						"          ADDRESS_LINE1 as string,",
+						"          ADDRESS_LINE2 as string,",
+						"          CITY_NAME as string,",
+						"          STATE_NAME as string,",
+						"          COUNTRY_NAME as string,",
+						"          ZIP_CODE as integer,",
+						"          GATE_CODE as integer,",
+						"          ADDRESS_TYPE as string,",
+						"          ADDRESS_STATUS as string,",
+						"          CUSTOMER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> customerAddress",
+						"source(output(",
+						"          CUSTOMER_EMAIL_ID as integer,",
+						"          CUSTOMER_EMAIL as string,",
+						"          CUSTOMER_EMAIL_TYPE as string,",
+						"          CUSTOMER_EMAIL_STATUS as string,",
+						"          CUSTOMER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> customerEmail",
+						"source(output(",
+						"          CUSTOMER_PHONE_NUMBER_ID as integer,",
+						"          CUSTOMER_PHONE_NUMBER as string,",
+						"          CUSTOMER_PHONE_NUMBER_TYPE as string,",
+						"          CUSTOMER_PHONE_NUMBER_STATUS as string,",
+						"          CUSTOMER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> customerPhone",
+						"source(output(",
+						"          HUT_LOVERS_ID as integer,",
+						"          JOINING_DATE as date,",
+						"          IS_ACTIVE as string,",
+						"          CUSTOMER_ID as integer,",
+						"          MEMBER_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> hutlover",
+						"filter4 window(over(CUSTOMER_ID),",
+						"     desc(CUSTOMER_PHONE_NUMBER_TYPE, true),",
+						"     secondary_phone_type = lead(CUSTOMER_PHONE_NUMBER_TYPE),",
+						"          secondary_phone = lead(CUSTOMER_PHONE_NUMBER),",
+						"          rnk = rowNumber(),",
+						"     partitionBy('hash', 1)) ~> window1",
+						"window1 filter(rnk==1) ~> filter1",
+						"filter3 window(over(CUSTOMER_ID),",
+						"     asc(CUSTOMER_EMAIL_TYPE, true),",
+						"     secondaryEmail_type = lead(CUSTOMER_EMAIL_TYPE),",
+						"          second_email = lead(CUSTOMER_EMAIL),",
+						"          rnk = rowNumber()) ~> window2",
+						"window2 filter(rnk == 1) ~> filter2",
+						"customerEmail filter(CUSTOMER_EMAIL_STATUS== 'Active') ~> filter3",
+						"customerPhone filter(CUSTOMER_PHONE_NUMBER_STATUS =='Active') ~> filter4",
+						"customerAddress filter(ADDRESS_STATUS == 'Active') ~> filter5",
+						"filter5 window(over(CUSTOMER_ID),",
+						"     asc(ADDRESS_TYPE, true),",
+						"     O_Address_lane1 = lead(ADDRESS_LINE1),",
+						"          O_Address_Lane_2 = lead(ADDRESS_LINE2),",
+						"          O_City_Name = lead(CITY_NAME),",
+						"          O_State_Name = lead(STATE_NAME),",
+						"          O_Country_Name = lead(COUNTRY_NAME),",
+						"          O_Zip_Code = lead(ZIP_CODE),",
+						"          O_Gate_Code = lead(GATE_CODE),",
+						"          address_rnk = rowNumber()) ~> window3",
+						"filter6 derive(O_Address_lane1 = case(ADDRESS_TYPE =='Office',ADDRESS_LINE1,O_Address_lane1),",
+						"          O_Address_Lane_2 = case(ADDRESS_TYPE =='Office',ADDRESS_LINE2,O_Address_Lane_2),",
+						"          O_City_Name = case(ADDRESS_TYPE =='Office',CITY_NAME,O_City_Name),",
+						"          O_State_Name = case(ADDRESS_TYPE =='Office',STATE_NAME,O_State_Name),",
+						"          O_Country_Name = case(ADDRESS_TYPE =='Office',COUNTRY_NAME,O_Country_Name),",
+						"          O_Zip_Code = case(ADDRESS_TYPE =='Office',ZIP_CODE,O_Zip_Code),",
+						"          O_Gate_Code = case(ADDRESS_TYPE =='Office',GATE_CODE,O_Gate_Code),",
+						"          Address_Lane1 = case(ADDRESS_TYPE =='Office','null',ADDRESS_LINE1),",
+						"          Address_Lane_2 = case(ADDRESS_TYPE =='Office','null',ADDRESS_LINE2),",
+						"          City_Name = case(ADDRESS_TYPE =='Office','null',CITY_NAME),",
+						"          State_Name = case(ADDRESS_TYPE =='Office','null',STATE_NAME),",
+						"          Country_Name = case(ADDRESS_TYPE =='Office','null',COUNTRY_NAME),",
+						"          Zip_Code = case(ADDRESS_TYPE =='Office',0,ZIP_CODE),",
+						"          Gate_Code = case(ADDRESS_TYPE =='Office',0),",
+						"     partitionBy('hash', 1)) ~> derivedColumn1",
+						"window3 filter(address_rnk==1) ~> filter6",
+						"customers, derivedColumn1 join(customers@CUSTOMER_ID == customerAddress@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, filter2 join(customers@CUSTOMER_ID == customerEmail@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2, filter1 join(customers@CUSTOMER_ID == customerPhone@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     partitionBy('hash', 1),",
+						"     broadcast: 'auto')~> join3",
+						"join3, hutlover join(customers@CUSTOMER_ID == hutlover@CUSTOMER_ID,",
+						"     joinType:'left',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     partitionBy('hash', 1),",
+						"     broadcast: 'auto')~> join4",
+						"select1 keyGenerate(output(CUSTOMER_DIM_KEY as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"join4 select(mapColumn(",
+						"          CUSTOMER_ID = customers@CUSTOMER_ID,",
+						"          CUSTOMER_FIRST_NAME,",
+						"          CUSTOMER_LAST_NAME,",
+						"          IS_LOYAL = IS_LOYAL_MEMBER,",
+						"          Primary_EMAIL = CUSTOMER_EMAIL,",
+						"          second_email,",
+						"          Primary_PHONE_NUMBER = CUSTOMER_PHONE_NUMBER,",
+						"          secondary_phone_number = secondary_phone,",
+						"          R_Address_Lane1 = Address_Lane1,",
+						"          R_Address_Lane_2 = Address_Lane_2,",
+						"          R_City_Name = derivedColumn1@City_Name,",
+						"          R_State_Name = derivedColumn1@State_Name,",
+						"          R_Country_Name = derivedColumn1@Country_Name,",
+						"          R_Zip_Code = derivedColumn1@Zip_Code,",
+						"          R_Gate_Code = derivedColumn1@Gate_Code,",
+						"          O_Address_lane1,",
+						"          O_Address_Lane_2,",
+						"          O_City_Name,",
+						"          O_State_Name,",
+						"          O_Country_Name,",
+						"          O_Zip_Code,",
+						"          O_Gate_Code,",
+						"          JOINING_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"surrogateKey1 derive(STG_CREATE_DATE = currentDate()) ~> derivedColumn2",
+						"derivedColumn2 select(mapColumn(",
+						"          CUSTOMER_DIM_KEY,",
+						"          CUSTOMER_ID,",
+						"          CUSTOMER_FIRST_NAME,",
+						"          CUSTOMER_LAST_NAME,",
+						"          IS_LOYAL,",
+						"          Primary_EMAIL,",
+						"          second_email,",
+						"          Primary_PHONE_NUMBER,",
+						"          secondary_phone_number,",
+						"          R_Address_Lane1,",
+						"          R_Address_Lane_2,",
+						"          R_City_Name,",
+						"          R_State_Name,",
+						"          R_Country_Name,",
+						"          R_Zip_Code,",
+						"          R_Gate_Code,",
+						"          O_Address_lane1,",
+						"          O_Address_Lane_2,",
+						"          O_City_Name,",
+						"          O_State_Name,",
+						"          O_Country_Name,",
+						"          O_Zip_Code,",
+						"          O_Gate_Code,",
+						"          JOINING_DATE,",
+						"          STG_CREATE_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/C_customers')]",
+				"[concat(variables('factoryId'), '/datasets/C_customer_address')]",
+				"[concat(variables('factoryId'), '/datasets/C_customerEmail')]",
+				"[concat(variables('factoryId'), '/datasets/C_customerPhone')]",
+				"[concat(variables('factoryId'), '/datasets/C_hutlover')]",
+				"[concat(variables('factoryId'), '/datasets/C_customer_AzureSqlDb')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_LocationStg')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "L_Store_location",
+								"type": "DatasetReference"
+							},
+							"name": "storeLoaction"
+						},
+						{
+							"dataset": {
+								"referenceName": "L_Country",
+								"type": "DatasetReference"
+							},
+							"name": "storeCountry"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "L_LocationDimSink",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          STORE_LOCATION_ID as short,",
+						"          STORE_NAME as string,",
+						"          STORE_ADDRESS as string,",
+						"          STORE_PHONE_NUMBER as string,",
+						"          STORE_OPEN_TIME as string,",
+						"          STORE_CLOSE_TIME as string,",
+						"          STATE_COUNTRY_ID as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> storeLoaction",
+						"source(output(",
+						"          STATE_COUNTRY_ID as short,",
+						"          STATE_NAME as string,",
+						"          STATE_ABBREVATION as string,",
+						"          STATE_COUNTRY as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> storeCountry",
+						"storeLoaction, storeCountry join(storeLoaction@STATE_COUNTRY_ID == storeCountry@STATE_COUNTRY_ID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          STORE_LOCATION_ID,",
+						"          STORE_NAME,",
+						"          STORE_ADDRESS,",
+						"          STORE_PHONE_NUMBER,",
+						"          STORE_OPEN_TIME,",
+						"          STORE_CLOSE_TIME,",
+						"          STATE_NAME,",
+						"          STATE_COUNTRY",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 keyGenerate(output(LOCATION_DIM_KEY as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"surrogateKey1 derive(DIM_CURRENT_DATE = currentDate()) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          Location_dim_key = LOCATION_DIM_KEY,",
+						"          STORE_LOCATION_ID,",
+						"          STORE_NAME,",
+						"          STORE_ADDRESS,",
+						"          STORE_PHONE_NUMBER,",
+						"          STATE_NAME,",
+						"          STATE_COUNTRY,",
+						"          STORE_OPEN_TIME,",
+						"          STORE_CLOSE_TIME,",
+						"          create_User_date = DIM_CURRENT_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/L_Store_location')]",
+				"[concat(variables('factoryId'), '/datasets/L_Country')]",
+				"[concat(variables('factoryId'), '/datasets/L_LocationDimSink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_LocationStg_new')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "L_Store_location",
+								"type": "DatasetReference"
+							},
+							"name": "StoreLocation"
+						},
+						{
+							"dataset": {
+								"referenceName": "L_Country",
+								"type": "DatasetReference"
+							},
+							"name": "StoreCountry"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "L_LocationDimSink",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          STORE_LOCATION_ID as integer,",
+						"          STORE_NAME as string,",
+						"          STORE_ADDRESS as string,",
+						"          STORE_PHONE_NUMBER as string,",
+						"          STORE_OPEN_TIME as string,",
+						"          STORE_CLOSE_TIME as string,",
+						"          STATE_COUNTRY_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> StoreLocation",
+						"source(output(",
+						"          STATE_COUNTRY_ID as integer,",
+						"          STATE_NAME as string,",
+						"          STATE_ABBREVATION as string,",
+						"          STATE_COUNTRY as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> StoreCountry",
+						"StoreLocation, StoreCountry join(StoreLocation@STATE_COUNTRY_ID == StoreCountry@STATE_COUNTRY_ID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 select(mapColumn(",
+						"          STORE_LOCATION_ID,",
+						"          STORE_NAME,",
+						"          STORE_ADDRESS,",
+						"          STORE_PHONE_NUMBER,",
+						"          STORE_OPEN_TIME,",
+						"          STORE_CLOSE_TIME,",
+						"          STATE_NAME,",
+						"          STATE_COUNTRY",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 keyGenerate(output(LOCATION_DIM_KEY as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"surrogateKey1 derive(DIM_CURRENT_DATE = currentDate()) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          LOCATION_DIM_KEY,",
+						"          STORE_LOCATION_ID,",
+						"          STORE_NAME,",
+						"          STORE_ADDRESS,",
+						"          STORE_PHONE_NUMBER,",
+						"          STORE_OPEN_TIME,",
+						"          STORE_CLOSE_TIME,",
+						"          STATE_NAME,",
+						"          STATE_COUNTRY,",
+						"          DIM_CURRENT_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/L_Store_location')]",
+				"[concat(variables('factoryId'), '/datasets/L_Country')]",
+				"[concat(variables('factoryId'), '/datasets/L_LocationDimSink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_ProductStg_new')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "P_product",
+								"type": "DatasetReference"
+							},
+							"name": "Product"
+						},
+						{
+							"dataset": {
+								"referenceName": "P_product_category",
+								"type": "DatasetReference"
+							},
+							"name": "ProductCategory"
+						},
+						{
+							"dataset": {
+								"referenceName": "p_product_sub_category",
+								"type": "DatasetReference"
+							},
+							"name": "ProductSubCategory"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "P_product_sql_db",
+								"type": "DatasetReference"
+							},
+							"name": "ProductDimSink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          PRODUCT_ID as integer,",
+						"          PRODUCT_NAME as string,",
+						"          PRODUCT_PRICE as double,",
+						"          PRODUCT_DESCRIPTION as string,",
+						"          CALORIES as integer,",
+						"          IS_ACTIVE as string,",
+						"          PRODUCT_SUBCATEGORY_ID as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Product",
+						"source(output(",
+						"          PRODUCT_CATEGORY_ID as integer,",
+						"          PRODUCT_CATEGORY_NAME as string,",
+						"          PRODUCT_CATEGORY_DESCRIPTION as string,",
+						"          IS_ACTIVE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ProductCategory",
+						"source(output(",
+						"          PRODUCT_SUBCATEGORY_ID as short,",
+						"          PRODUCT_SUBCATEGORY_NAME as string,",
+						"          PRODUCT_SIZE as string,",
+						"          PRODUCT_CATEGORY_ID as short,",
+						"          IS_ACTIVE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> ProductSubCategory",
+						"Product, ProductSubCategory join(Product@PRODUCT_SUBCATEGORY_ID == ProductSubCategory@PRODUCT_SUBCATEGORY_ID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, ProductCategory join(ProductSubCategory@PRODUCT_CATEGORY_ID == ProductCategory@PRODUCT_CATEGORY_ID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2 select(mapColumn(",
+						"          PRODUCT_ID,",
+						"          PRODUCT_NAME,",
+						"          PRODUCT_PRICE,",
+						"          PRODUCT_DESCRIPTION,",
+						"          CALORIES,",
+						"          IS_ACTIVE = Product@IS_ACTIVE,",
+						"          PRODUCT_SUBCATEGORY_ID = ProductSubCategory@PRODUCT_SUBCATEGORY_ID,",
+						"          PRODUCT_SUBCATEGORY_NAME,",
+						"          PRODUCT_SIZE,",
+						"          PRODUCT_CATEGORY_ID = ProductCategory@PRODUCT_CATEGORY_ID,",
+						"          PRODUCT_CATEGORY_NAME",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 keyGenerate(output(Product_Dim_Key as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"surrogateKey1 derive(STG_CREATE_DATE = currentDate()) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          PRODUCT_ID,",
+						"          PRODUCT_NAME,",
+						"          PRODUCT_PRICE,",
+						"          PRODUCT_DESCRIPTION,",
+						"          CALORIES,",
+						"          IS_ACTIVE,",
+						"          PRODUCT_SUBCATEGORY_ID,",
+						"          PRODUCT_SUBCATEGORY_NAME,",
+						"          PRODUCT_SIZE,",
+						"          PRODUCT_CATEGORY_ID,",
+						"          PRODUCT_CATEGORY_NAME,",
+						"          Product_Dim_Key,",
+						"          STG_CREATE_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          PRODUCT_ID,",
+						"          PRODUCT_NAME,",
+						"          PRODUCT_PRICE,",
+						"          PRODUCT_DESCRIPTION,",
+						"          IS_ACTIVE,",
+						"          PRODUCT_SUBCATEGORY_NAME,",
+						"          PRODUCT_SUBCATEGORY_ID,",
+						"          PRODUCT_SIZE,",
+						"          PRODUCT_CATEGORY_ID,",
+						"          PRODUCT_CATEGORY_NAME,",
+						"          Product_Dim_Key,",
+						"          STG_CREATE_DATE",
+						"     )) ~> ProductDimSink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/P_product')]",
+				"[concat(variables('factoryId'), '/datasets/P_product_category')]",
+				"[concat(variables('factoryId'), '/datasets/p_product_sub_category')]",
+				"[concat(variables('factoryId'), '/datasets/P_product_sql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_Product_Dim_SCD2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "db_product_dim",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "db_product_dim_scd2_flag",
+								"type": "DatasetReference"
+							},
+							"name": "SourceProductDimSCD2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "db_product_dim_scd2_flag",
+								"type": "DatasetReference"
+							},
+							"name": "Insertsink"
+						},
+						{
+							"dataset": {
+								"referenceName": "db_product_dim_scd2_flag",
+								"type": "DatasetReference"
+							},
+							"name": "Updatesink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "cast2"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "filter2"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "Insertfilter"
+						},
+						{
+							"name": "Updatefilter"
+						},
+						{
+							"name": "derivedColumn3"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "derivedColumn4"
+						},
+						{
+							"name": "select3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          PRODUCT_ID as integer,",
+						"          PRODUCT_NAME as string,",
+						"          PRODUCT_PRICE as double,",
+						"          PRODUCT_DESCRIPTION as string,",
+						"          IS_ACTIVE as string,",
+						"          PRODUCT_SUBCATEGORY_NAME as string,",
+						"          PRODUCT_SUBCATEGORY_ID as short,",
+						"          PRODUCT_SIZE as string,",
+						"          PRODUCT_CATEGORY_ID as integer,",
+						"          PRODUCT_CATEGORY_NAME as string,",
+						"          Product_Dim_Key as long,",
+						"          STG_CREATE_DATE as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"source(output(",
+						"          Surr_Product_kEY as integer,",
+						"          Product_ID as integer,",
+						"          Product_Name as string,",
+						"          Product_Price as decimal(5,2),",
+						"          Is_Active as string,",
+						"          PRODUCT_CATEGORY_ID as string,",
+						"          Product_Category_Name as string,",
+						"          Product_SubCategory_ID as integer,",
+						"          Product_SubCategory_Name as string,",
+						"          Product_Size as string,",
+						"          Product_Description as string,",
+						"          MD5 as string,",
+						"          FLAG as integer,",
+						"          Eff_Start_Date as date,",
+						"          Eff_End_Date as date,",
+						"          DM_CREATE_DATE as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> SourceProductDimSCD2",
+						"source1 cast(output(",
+						"          PRODUCT_ID as integer,",
+						"          PRODUCT_NAME as string,",
+						"          PRODUCT_PRICE as decimal(10,0),",
+						"          PRODUCT_DESCRIPTION as string,",
+						"          IS_ACTIVE as string,",
+						"          PRODUCT_SUBCATEGORY_NAME as string,",
+						"          PRODUCT_SUBCATEGORY_ID as integer,",
+						"          PRODUCT_SIZE as string,",
+						"          PRODUCT_CATEGORY_ID as integer,",
+						"          PRODUCT_CATEGORY_NAME as string,",
+						"          Product_Dim_Key as integer,",
+						"          STG_CREATE_DATE as date",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"SourceProductDimSCD2 cast(output(",
+						"          PRODUCT_CATEGORY_ID as integer",
+						"     ),",
+						"     errors: true) ~> cast2",
+						"cast1 filter(IS_ACTIVE=='Active') ~> filter1",
+						"filter1 derive(Src_MD5 = md5(concat(PRODUCT_NAME,toString(PRODUCT_PRICE),PRODUCT_DESCRIPTION,toString(PRODUCT_SUBCATEGORY_ID),PRODUCT_SUBCATEGORY_NAME,PRODUCT_SIZE,PRODUCT_CATEGORY_NAME,toString(PRODUCT_CATEGORY_ID)))) ~> derivedColumn1",
+						"cast2 filter(isNull(Eff_End_Date)==true() && FLAG==1) ~> filter2",
+						"filter2 derive(o_TGT_md5 = md5(concat(Product_Name,toString(Product_Price),Product_Description,toString(Product_SubCategory_ID),Product_SubCategory_Name,Product_Size,Product_Category_Name,toString(PRODUCT_CATEGORY_ID)))) ~> derivedColumn2",
+						"derivedColumn2 select(mapColumn(",
+						"          Surr_Product_kEY,",
+						"          TGT_Product_ID = Product_ID,",
+						"          TGT_Product_Name = Product_Name,",
+						"          TGT_Product_Price = Product_Price,",
+						"          TGT_Is_Active = Is_Active,",
+						"          TGT_PRODUCT_CATEGORY_ID = PRODUCT_CATEGORY_ID,",
+						"          TGT_Product_Category_Name = Product_Category_Name,",
+						"          TGT_Product_SubCategory_ID = Product_SubCategory_ID,",
+						"          TGT_Product_SubCategory_Name = Product_SubCategory_Name,",
+						"          TGT_Product_Size = Product_Size,",
+						"          TGT_Product_Description = Product_Description,",
+						"          Eff_Start_Date,",
+						"          Eff_End_Date,",
+						"          DM_CREATE_DATE,",
+						"          TGT_md5 = o_TGT_md5",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"derivedColumn1, select1 lookup(PRODUCT_ID == TGT_Product_ID,",
+						"     multiple: true,",
+						"     broadcast: 'auto')~> lookup1",
+						"lookup1 filter(isNull(Surr_Product_kEY)||Src_MD5!=TGT_md5) ~> Insertfilter",
+						"lookup1 filter(Src_MD5!=TGT_md5) ~> Updatefilter",
+						"Updatefilter derive(o_End_Date = toDate('12/31/9999', 'MM/DD/YYYY', 'en-US'),",
+						"          u_flag = 0) ~> derivedColumn3",
+						"derivedColumn3 select(mapColumn(",
+						"          Surr_Product_kEY,",
+						"          o_End_Date,",
+						"          u_flag",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 alterRow(updateIf(1==1)) ~> alterRow1",
+						"Insertfilter derive(o_Start_Date = currentDate(),",
+						"          o_Dm_create_Date = currentDate(),",
+						"          i_Flag = 1) ~> derivedColumn4",
+						"derivedColumn4 select(mapColumn(",
+						"          PRODUCT_ID,",
+						"          PRODUCT_NAME,",
+						"          PRODUCT_PRICE,",
+						"          PRODUCT_DESCRIPTION,",
+						"          IS_ACTIVE,",
+						"          PRODUCT_SUBCATEGORY_NAME,",
+						"          PRODUCT_SUBCATEGORY_ID,",
+						"          PRODUCT_SIZE,",
+						"          PRODUCT_CATEGORY_ID,",
+						"          PRODUCT_CATEGORY_NAME,",
+						"          Product_Dim_Key,",
+						"          Src_MD5,",
+						"          o_Start_Date,",
+						"          o_Dm_create_Date,",
+						"          i_Flag",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3",
+						"select3 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Surr_Product_kEY as integer,",
+						"          Product_ID as integer,",
+						"          Product_Name as string,",
+						"          Product_Price as decimal(5,2),",
+						"          Is_Active as string,",
+						"          PRODUCT_CATEGORY_ID as string,",
+						"          Product_Category_Name as string,",
+						"          Product_SubCategory_ID as integer,",
+						"          Product_SubCategory_Name as string,",
+						"          Product_Size as string,",
+						"          Product_Description as string,",
+						"          MD5 as string,",
+						"          FLAG as integer,",
+						"          Eff_Start_Date as date,",
+						"          Eff_End_Date as date,",
+						"          DM_CREATE_DATE as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Product_ID = PRODUCT_ID,",
+						"          Product_Name = PRODUCT_NAME,",
+						"          Product_Price = PRODUCT_PRICE,",
+						"          Is_Active = IS_ACTIVE,",
+						"          PRODUCT_CATEGORY_ID,",
+						"          Product_Category_Name = PRODUCT_CATEGORY_NAME,",
+						"          Product_SubCategory_ID = PRODUCT_SUBCATEGORY_ID,",
+						"          Product_SubCategory_Name = PRODUCT_SUBCATEGORY_NAME,",
+						"          Product_Size = PRODUCT_SIZE,",
+						"          Product_Description = PRODUCT_DESCRIPTION,",
+						"          MD5 = Src_MD5,",
+						"          FLAG = i_Flag,",
+						"          Eff_Start_Date = o_Start_Date,",
+						"          DM_CREATE_DATE = o_Dm_create_Date",
+						"     )) ~> Insertsink",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Surr_Product_kEY as integer,",
+						"          Product_ID as integer,",
+						"          Product_Name as string,",
+						"          Product_Price as decimal(5,2),",
+						"          Is_Active as string,",
+						"          PRODUCT_CATEGORY_ID as string,",
+						"          Product_Category_Name as string,",
+						"          Product_SubCategory_ID as integer,",
+						"          Product_SubCategory_Name as string,",
+						"          Product_Size as string,",
+						"          Product_Description as string,",
+						"          MD5 as string,",
+						"          FLAG as integer,",
+						"          Eff_Start_Date as date,",
+						"          Eff_End_Date as date,",
+						"          DM_CREATE_DATE as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['Surr_Product_kEY'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Surr_Product_kEY,",
+						"          Eff_End_Date = o_End_Date,",
+						"          FLAG = u_flag",
+						"     )) ~> Updatesink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/db_product_dim')]",
+				"[concat(variables('factoryId'), '/datasets/db_product_dim_scd2_flag')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_Product_Stg')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "P_product",
+								"type": "DatasetReference"
+							},
+							"name": "product"
+						},
+						{
+							"dataset": {
+								"referenceName": "P_product_category",
+								"type": "DatasetReference"
+							},
+							"name": "PRODUCTCATEGORY"
+						},
+						{
+							"dataset": {
+								"referenceName": "p_product_sub_category",
+								"type": "DatasetReference"
+							},
+							"name": "PRODUCTsubCATEGORY"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "P_product_sql_db",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "join2"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "surrogateKey1"
+						},
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "select2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          PRODUCT_ID as short,",
+						"          PRODUCT_NAME as string,",
+						"          PRODUCT_PRICE as string,",
+						"          PRODUCT_DESCRIPTION as string,",
+						"          CALORIES as short,",
+						"          IS_ACTIVE as string,",
+						"          PRODUCT_SUBCATEGORY_ID as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> product",
+						"source(output(",
+						"          PRODUCT_CATEGORY_ID as short,",
+						"          PRODUCT_CATEGORY_NAME as string,",
+						"          PRODUCT_CATEGORY_DESCRIPTION as string,",
+						"          IS_ACTIVE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> PRODUCTCATEGORY",
+						"source(output(",
+						"          PRODUCT_SUBCATEGORY_ID as short,",
+						"          PRODUCT_SUBCATEGORY_NAME as string,",
+						"          PRODUCT_SIZE as string,",
+						"          PRODUCT_CATEGORY_ID as short,",
+						"          IS_ACTIVE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> PRODUCTsubCATEGORY",
+						"product, PRODUCTsubCATEGORY join(product@PRODUCT_SUBCATEGORY_ID == PRODUCTsubCATEGORY@PRODUCT_SUBCATEGORY_ID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1, PRODUCTCATEGORY join(PRODUCTsubCATEGORY@PRODUCT_CATEGORY_ID == PRODUCTCATEGORY@PRODUCT_CATEGORY_ID,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join2",
+						"join2 select(mapColumn(",
+						"          PRODUCT_ID,",
+						"          PRODUCT_NAME,",
+						"          PRODUCT_PRICE,",
+						"          PRODUCT_DESCRIPTION,",
+						"          IS_ACTIVE = product@IS_ACTIVE,",
+						"          PRODUCT_SUBCATEGORY_ID = PRODUCTsubCATEGORY@PRODUCT_SUBCATEGORY_ID,",
+						"          PRODUCT_SUBCATEGORY_NAME,",
+						"          PRODUCT_SIZE,",
+						"          PRODUCT_CATEGORY_ID = PRODUCTCATEGORY@PRODUCT_CATEGORY_ID,",
+						"          PRODUCT_CATEGORY_NAME",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"select1 keyGenerate(output(product_dim_kEY as long),",
+						"     startAt: 1L,",
+						"     stepValue: 1L) ~> surrogateKey1",
+						"surrogateKey1 derive(STG_CREATE_DATE = currentDate(),",
+						"          PRODUCT_PRICE = replace(PRODUCT_PRICE, '$', '')) ~> derivedColumn1",
+						"derivedColumn1 select(mapColumn(",
+						"          product_dim_kEY,",
+						"          PRODUCT_ID,",
+						"          PRODUCT_NAME,",
+						"          PRODUCT_PRICE,",
+						"          PRODUCT_DESCRIPTION,",
+						"          IS_ACTIVE,",
+						"          PRODUCT_CATEGORY_ID,",
+						"          PRODUCT_CATEGORY_NAME,",
+						"          PRODUCT_SUBCATEGORY_NAME,",
+						"          PRODUCT_SIZE,",
+						"          STG_CREATE_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/P_product')]",
+				"[concat(variables('factoryId'), '/datasets/P_product_category')]",
+				"[concat(variables('factoryId'), '/datasets/p_product_sub_category')]",
+				"[concat(variables('factoryId'), '/datasets/P_product_sql_db')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_Scd2ProdDim_flag')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "scd2",
+				"folder": {
+					"name": "AZURE_PROJECT_DATAFLOW"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "db_product_dim",
+								"type": "DatasetReference"
+							},
+							"name": "productdb"
+						},
+						{
+							"dataset": {
+								"referenceName": "db_product_dim_scd2_flag",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "db_product_dim_scd2_flag",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "db_product_dim_scd2_flag",
+								"type": "DatasetReference"
+							},
+							"name": "updatesink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						},
+						{
+							"name": "derivedColumn2"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "lookup1"
+						},
+						{
+							"name": "filter2"
+						},
+						{
+							"name": "derivedColumn4"
+						},
+						{
+							"name": "cast1"
+						},
+						{
+							"name": "cast2"
+						},
+						{
+							"name": "derivedColumn5"
+						},
+						{
+							"name": "insfilter3"
+						},
+						{
+							"name": "updfilter4"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "select3"
+						},
+						{
+							"name": "derivedColumn6"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          product_dim_kEY as long,",
+						"          PRODUCT_ID as short,",
+						"          PRODUCT_NAME as string,",
+						"          PRODUCT_PRICE as string,",
+						"          PRODUCT_DESCRIPTION as string,",
+						"          IS_ACTIVE as string,",
+						"          PRODUCT_CATEGORY_ID as short,",
+						"          PRODUCT_CATEGORY_NAME as string,",
+						"          PRODUCT_SUBCATEGORY_ID as short,",
+						"          PRODUCT_SUBCATEGORY_NAME as string,",
+						"          PRODUCT_SIZE as string,",
+						"          STG_CREATE_DATE as date",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> productdb",
+						"source(output(",
+						"          Surr_Product_kEY as integer,",
+						"          Product_ID as integer,",
+						"          Product_Name as string,",
+						"          Product_Price as decimal(5,2),",
+						"          Is_Active as string,",
+						"          PRODUCT_CATEGORY_ID as string,",
+						"          Product_Category_Name as string,",
+						"          Product_SubCategory_ID as integer,",
+						"          Product_SubCategory_Name as string,",
+						"          Product_Size as string,",
+						"          Product_Description as string,",
+						"          MD5 as string,",
+						"          Eff_Start_Date as date,",
+						"          Eff_End_Date as date,",
+						"          DM_CREATE_DATE as date,",
+						"          flag as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source1",
+						"derivedColumn4 select(mapColumn(",
+						"          Surr_Product_kEY,",
+						"          TGT_Product_ID = Product_ID,",
+						"          TGT_Product_Name = Product_Name,",
+						"          TGT_Product_Price = Product_Price,",
+						"          TGT_Is_Active = Is_Active,",
+						"          TGT_PRODUCT_CATEGORY_ID = PRODUCT_CATEGORY_ID,",
+						"          TGT_Product_Category_Name = Product_Category_Name,",
+						"          TGT_Product_SubCategory_ID = Product_SubCategory_ID,",
+						"          TGT_Product_SubCategory_Name = Product_SubCategory_Name,",
+						"          TGT_Product_Size = Product_Size,",
+						"          TGT_Product_Description = Product_Description,",
+						"          Eff_Start_Date,",
+						"          Eff_End_Date,",
+						"          DM_CREATE_DATE,",
+						"          TGT_md5 = o_TGT_md5",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"insfilter3 derive(o_Start_Date = currentDate(),",
+						"          o_Dm_create_Date = currentDate(),",
+						"          i_flag = 1) ~> derivedColumn2",
+						"derivedColumn2 select(mapColumn(",
+						"          PRODUCT_ID,",
+						"          PRODUCT_NAME,",
+						"          PRODUCT_PRICE,",
+						"          PRODUCT_DESCRIPTION,",
+						"          IS_ACTIVE,",
+						"          PRODUCT_CATEGORY_ID,",
+						"          PRODUCT_CATEGORY_NAME,",
+						"          PRODUCT_SUBCATEGORY_NAME,",
+						"          PRODUCT_SIZE,",
+						"          o_Dm_create_Date,",
+						"          src_md5,",
+						"          o_Start_Date,",
+						"          PRODUCT_SUBCATEGORY_ID,",
+						"          i_flag",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"cast2 filter(IS_ACTIVE == 'Active') ~> filter1",
+						"derivedColumn5, select1 lookup(PRODUCT_ID == TGT_Product_ID,",
+						"     multiple: false,",
+						"     pickup: 'any',",
+						"     broadcast: 'auto')~> lookup1",
+						"cast1 filter(isNull(Eff_End_Date)==true() && flag == 1) ~> filter2",
+						"filter2 derive(o_TGT_md5 = md5(concat(Product_Name,toString(Product_Price),Product_Description,toString(Product_SubCategory_ID),Product_SubCategory_Name,Product_Size,Product_Category_Name,toString(PRODUCT_CATEGORY_ID)))) ~> derivedColumn4",
+						"source1 cast(output(",
+						"          PRODUCT_CATEGORY_ID as integer",
+						"     ),",
+						"     errors: true) ~> cast1",
+						"productdb cast(output(",
+						"          product_dim_kEY as integer,",
+						"          PRODUCT_ID as integer,",
+						"          PRODUCT_PRICE as decimal(10,2),",
+						"          PRODUCT_SUBCATEGORY_ID as integer",
+						"     ),",
+						"     errors: true) ~> cast2",
+						"filter1 derive(src_md5 = md5(concat(PRODUCT_NAME,toString(PRODUCT_PRICE),PRODUCT_DESCRIPTION,toString(PRODUCT_SUBCATEGORY_ID),PRODUCT_SUBCATEGORY_NAME,PRODUCT_SIZE,PRODUCT_CATEGORY_NAME,toString(PRODUCT_CATEGORY_ID)))) ~> derivedColumn5",
+						"lookup1 filter(isNull(Surr_Product_kEY) || src_md5 != TGT_md5) ~> insfilter3",
+						"lookup1 filter(src_md5 != TGT_md5) ~> updfilter4",
+						"select3 alterRow(updateIf(1==1)) ~> alterRow1",
+						"derivedColumn6 select(mapColumn(",
+						"          Surr_Product_kEY,",
+						"          o_end_date,",
+						"          u_flag",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select3",
+						"updfilter4 derive(o_end_date = toDate('12/31/9999', 'MM/dd/yyyy', 'en-US'),",
+						"          u_flag = 0) ~> derivedColumn6",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Surr_Product_kEY as integer,",
+						"          Product_ID as integer,",
+						"          Product_Name as string,",
+						"          Product_Price as decimal(5,2),",
+						"          Is_Active as string,",
+						"          PRODUCT_CATEGORY_ID as string,",
+						"          Product_Category_Name as string,",
+						"          Product_SubCategory_ID as integer,",
+						"          Product_SubCategory_Name as string,",
+						"          Product_Size as string,",
+						"          Product_Description as string,",
+						"          MD5 as string,",
+						"          FLAG as integer,",
+						"          Eff_Start_Date as date,",
+						"          Eff_End_Date as date,",
+						"          DM_CREATE_DATE as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Product_ID = PRODUCT_ID,",
+						"          Product_Name = PRODUCT_NAME,",
+						"          Product_Price = PRODUCT_PRICE,",
+						"          Is_Active = IS_ACTIVE,",
+						"          PRODUCT_CATEGORY_ID,",
+						"          Product_Category_Name = PRODUCT_CATEGORY_NAME,",
+						"          Product_SubCategory_ID = PRODUCT_SUBCATEGORY_ID,",
+						"          Product_SubCategory_Name = PRODUCT_SUBCATEGORY_NAME,",
+						"          Product_Size = PRODUCT_SIZE,",
+						"          Product_Description = PRODUCT_DESCRIPTION,",
+						"          MD5 = src_md5,",
+						"          Eff_Start_Date = o_Start_Date,",
+						"          DM_CREATE_DATE = o_Dm_create_Date,",
+						"          FLAG = i_flag",
+						"     )) ~> sink1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          Surr_Product_kEY as integer,",
+						"          Product_ID as integer,",
+						"          Product_Name as string,",
+						"          Product_Price as decimal(5,2),",
+						"          Is_Active as string,",
+						"          PRODUCT_CATEGORY_ID as string,",
+						"          Product_Category_Name as string,",
+						"          Product_SubCategory_ID as integer,",
+						"          Product_SubCategory_Name as string,",
+						"          Product_Size as string,",
+						"          Product_Description as string,",
+						"          MD5 as string,",
+						"          FLAG as integer,",
+						"          Eff_Start_Date as date,",
+						"          Eff_End_Date as date,",
+						"          DM_CREATE_DATE as date",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:false,",
+						"     updateable:true,",
+						"     upsertable:false,",
+						"     keys:['Surr_Product_kEY'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          Surr_Product_kEY,",
+						"          Eff_End_Date = o_end_date,",
+						"          FLAG = u_flag",
+						"     )) ~> updatesink2"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/db_product_dim')]",
+				"[concat(variables('factoryId'), '/datasets/db_product_dim_scd2_flag')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_alter_row_delete')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"folder": {
+					"name": "DATAFLOW_PRACTICE"
+				},
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_Delimited_Src",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						},
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_SRC",
+								"type": "DatasetReference"
+							},
+							"name": "source2"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_SRC",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						},
+						{
+							"name": "alterRow1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EMPLOYEE_ID as short,",
+						"          FIRST_NAME as string,",
+						"          LAST_NAME as string,",
+						"          EMAIL as string,",
+						"          PHONE_NUMBER as string,",
+						"          HIRE_DATE as string,",
+						"          JOB_ID as string,",
+						"          SALARY as double,",
+						"          COMMISSION_PCT as double,",
+						"          MANAGER_ID as short,",
+						"          DEPARTMENT_ID as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source(output(",
+						"          EMPLOYEE_ID as integer,",
+						"          FIRST_NAME as string,",
+						"          LAST_NAME as string,",
+						"          EMAIL as string,",
+						"          PHONE_NUMBER as string,",
+						"          HIRE_DATE as string,",
+						"          JOB_ID as string,",
+						"          SALARY as double,",
+						"          COMMISSION_PCT as double,",
+						"          MANAGER_ID as short,",
+						"          DEPARTMENT_ID as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     isolationLevel: 'READ_UNCOMMITTED',",
+						"     format: 'table') ~> source2",
+						"source1, source2 join(source1@EMPLOYEE_ID == source2@EMPLOYEE_ID,",
+						"     joinType:'right',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 alterRow(deleteIf(isNull(source1@EMPLOYEE_ID))) ~> alterRow1",
+						"alterRow1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:true,",
+						"     insertable:false,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     keys:['EMPLOYEE_ID'],",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError',",
+						"     mapColumn(",
+						"          EMPLOYEE_ID = source2@EMPLOYEE_ID,",
+						"          FIRST_NAME = source1@FIRST_NAME,",
+						"          LAST_NAME = source1@LAST_NAME,",
+						"          EMAIL = source1@EMAIL,",
+						"          PHONE_NUMBER = source1@PHONE_NUMBER,",
+						"          HIRE_DATE = source1@HIRE_DATE,",
+						"          JOB_ID = source1@JOB_ID,",
+						"          SALARY = source1@SALARY,",
+						"          COMMISSION_PCT = source1@COMMISSION_PCT,",
+						"          MANAGER_ID = source1@MANAGER_ID,",
+						"          DEPARTMENT_ID = source1@DEPARTMENT_ID",
+						"     ),",
+						"     partitionBy('hash', 1)) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Delimited_Src')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_SRC')]"
+			]
+		}
+	]
+}

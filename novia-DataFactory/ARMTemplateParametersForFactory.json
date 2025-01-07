@@ -1,0 +1,33 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "novia-DataFactory"
+		},
+		"ADLS_LINKED_SERVICE_GEN2_accountKey": {
+			"value": ""
+		},
+		"AzureSqlDatabase1_password": {
+			"value": ""
+		},
+		"ORACLE_TGT_HR_connectionString": {
+			"value": ""
+		},
+		"Oracle_connectionString": {
+			"value": ""
+		},
+		"ADLS_LINKED_SERVICE_GEN2_properties_typeProperties_url": {
+			"value": "https://noviastorageadf.dfs.core.windows.net/"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_server": {
+			"value": "sqlserver1218.database.windows.net"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_database": {
+			"value": "sqlserver"
+		},
+		"AzureSqlDatabase1_properties_typeProperties_userName": {
+			"value": "noviasql"
+		}
+	}
+}

@@ -4,7 +4,7 @@
 		"annotations": [],
 		"type": "AzureKeyVault",
 		"typeProperties": {
-			"baseUrl": "https://Dev-Key-Vault-R.vault.azure.net/"
+			"baseUrl": "https://kv-novia-dev.vault.azure.net/"
 		}
 	}
 }
